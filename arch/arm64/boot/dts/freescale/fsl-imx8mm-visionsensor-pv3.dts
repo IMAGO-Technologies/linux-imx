@@ -19,6 +19,12 @@
 		stdout-path = &uart2;
 	};
 
+	aliases {
+		mmc0 = &usdhc2;
+		/delete-property/ mmc1;
+		/delete-property/ mmc2;
+	};
+
 	regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
