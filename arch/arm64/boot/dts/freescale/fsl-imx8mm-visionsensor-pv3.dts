@@ -410,8 +410,10 @@
 		mipi1_sensor_ep: endpoint@1 {
 			remote-endpoint = <&sensor_mipi_ep>;
 			data-lanes = <2>;
-			csis-hs-settle = <26>;
-			csis-clk-settle = <2>;
+/* Values for HSSETTLE / CLKSETTLECTL (1100 MHz MIPI clock)
+ https://community.nxp.com/t5/i-MX-Processors/Explenation-for-HS-SETTLE-parameter-in-MIPI-CSI-D-PHY-registers/m-p/764266/highlight/true#M118735 */
+			csis-hs-settle = <24>;
+			csis-clk-settle = <0>;
 			csis-wclk;
 		};
 
