@@ -219,7 +219,7 @@
 
 		pinctrl_pcie0: pcie0grp {
 			fsl,pins = <
-				MX8MM_IOMUXC_SAI2_RXFS_GPIO4_IO21	0x41
+				MX8MM_IOMUXC_SAI2_RXFS_GPIO4_IO21	0x106
 			>;
 		};
 	};
@@ -523,7 +523,9 @@
 &pcie0{
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
-	reset-gpio = <&gpio4 21 GPIO_ACTIVE_LOW>;
+	reset-gpio = <&gpio4 21 GPIO_ACTIVE_HIGH>;
 	ext_osc = <0>;
-	status = "okay";
+	status = "disabled";
+	fsl,max-link-speed = <1>;
 };
+
