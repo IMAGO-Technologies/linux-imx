@@ -81,8 +81,17 @@
 };
 
 &clk {
-	assigned-clocks = <&clk IMX8MM_AUDIO_PLL1>, <&clk IMX8MM_AUDIO_PLL2>;
-	assigned-clock-rates = <393216000>, <361267200>;
+	/* Add IMX8MM_CLK_ENET_PHY_REF to the init-on-array. This clock is used
+	   by the FPGA (gpio1_00). Without this, the clock is disabled until the
+	   ethernet driver (fec) is loaded. */
+	init-on-array = <IMX8MM_CLK_AHB IMX8MM_CLK_DRAM_CORE
+			 IMX8MM_CLK_NOC IMX8MM_CLK_NOC_APB
+			 IMX8MM_CLK_USB_BUS
+			 IMX8MM_CLK_MAIN_AXI IMX8MM_CLK_AUDIO_AHB
+			 IMX8MM_CLK_DRAM_APB IMX8MM_CLK_A53_DIV
+			 IMX8MM_ARM_PLL_OUT IMX8MM_CLK_DISP_AXI
+			 IMX8MM_CLK_DISP_APB
+			 IMX8MM_CLK_ENET_PHY_REF>;
 };
 
 &iomuxc {
