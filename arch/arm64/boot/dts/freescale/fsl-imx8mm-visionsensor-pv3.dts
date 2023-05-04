@@ -31,6 +31,7 @@
 		mmc0 = &usdhc2;
 		/delete-property/ mmc1;
 		/delete-property/ mmc2;
+		rtc0 = &rtc_rv8263;	/* rct0 is used in kernel config: CONFIG_RTC_HCTOSYS_DEVICE, CONFIG_RTC_SYSTOHC_DEVICE */
 	};
 
 	regulators {
@@ -49,8 +50,11 @@
 		};
 	};
 
-	/delete-node/ tmu@30260000;
-	/delete-node/ thermal-zones;
+	thermal-zones {
+		cpu-thermal {
+			status = "disabled";
+		};
+	};
 
 	sensor_mipi: sensor {
 		compatible = "imago,sensor_mipi";
@@ -61,6 +65,10 @@
 			};
 		};
 	};
+};
+
+&tmu {
+	status = "disabled";
 };
 
 &resmem {
@@ -419,6 +427,14 @@
 	lm75: lm75@49 {
 		compatible = "lm75";
 		reg = <0x49>;
+	};
+
+	rtc_rv8263: rv8263@51 {
+		/* "microcrystal,rv8263" requires new kernel:
+		compatible = "microcrystal,rv8263"; */
+		compatible = "nxp,pcf85063";
+		reg = <0x51>;
+		status = "disabled";
 	};
 };
 
