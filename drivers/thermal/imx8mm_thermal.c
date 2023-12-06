@@ -77,13 +77,17 @@ static int tmu_get_trend(void *p, int trip, enum thermal_trend *trend)
 {
 	int trip_temp;
 	struct imx8mm_tmu *tmu = p;
+	int hysteresis = IMX_TEMP_PASSIVE_COOL_DELTA;
 
 	if (!tmu->tzd)
 		return 0;
 
 	trip_temp = (trip == IMX_TRIP_PASSIVE) ? tmu->temp_passive : tmu->temp_critical;
 
-	if (tmu->tzd->temperature >= (trip_temp - IMX_TEMP_PASSIVE_COOL_DELTA))
+	if (tmu->tzd->ops->get_trip_hyst)
+		tmu->tzd->ops->get_trip_hyst(tmu->tzd, trip, &hysteresis);
+
+	if (tmu->tzd->temperature >= (trip_temp - hysteresis))
 		*trend = THERMAL_TREND_RAISE_FULL;
 	else
 		*trend = THERMAL_TREND_DROP_FULL;
