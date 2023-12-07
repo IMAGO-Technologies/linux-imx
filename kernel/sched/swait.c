@@ -45,9 +45,6 @@ void swake_up_all_locked(struct swait_queue_head *q)
 		list_del_init(&curr->task_list);
 		wakes++;
 	}
-	if (pm_in_action)
-		return;
-	WARN(wakes > 2, "complete_all() with %d waiters\n", wakes);
 }
 EXPORT_SYMBOL(swake_up_all_locked);
 
