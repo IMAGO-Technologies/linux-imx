@@ -321,6 +321,14 @@ static const struct csis_pix_format mipi_csis_formats[] = {
 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
 		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
 		.data_alignment = 8,
+	}, {
+		.code = MEDIA_BUS_FMT_SBGGR10_ALAW8_1X8,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
+		.data_alignment = 8,
+	}, {
+		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
+		.data_alignment = 16,
 	}
 };
 
@@ -379,6 +387,23 @@ static int mipi_csis_phy_init(struct csi_state *state)
 			1000000, 1000000);
 
 	return ret;
+}
+
+static int mipi_csis_phy_reset_mx8mm(struct csi_state *state)
+{
+	struct reset_control *phy_reset;
+
+	phy_reset = devm_reset_control_get_exclusive(state->dev, "csi,mipi_rst");
+	if (IS_ERR(phy_reset))
+		return PTR_ERR(phy_reset);
+
+	reset_control_assert(phy_reset);
+	usleep_range(10, 20);
+	reset_control_deassert(phy_reset);
+	usleep_range(10, 20);
+
+	return 0;
+
 }
 
 static int mipi_csis_phy_reset(struct csi_state *state)
@@ -924,6 +949,15 @@ static int subdev_notifier_bound(struct v4l2_async_notifier *notifier,
 	return 0;
 }
 
+static void subdev_notifier_unbind(struct v4l2_async_notifier *notifier,
+			    struct v4l2_subdev *subdev,
+			    struct v4l2_async_connection *asd)
+{
+	struct csi_state *state = notifier_to_mipi_dev(notifier);
+
+	state->sensor_sd = NULL;
+}
+
 static int mipi_csis_parse_dt(struct platform_device *pdev,
 			    struct csi_state *state)
 {
@@ -964,6 +998,7 @@ static const struct of_device_id mipi_csis_of_match[];
 
 static const struct v4l2_async_notifier_operations mxc_mipi_csi_subdev_ops = {
 	.bound = subdev_notifier_bound,
+	.unbind = subdev_notifier_unbind,
 };
 
 /* register parent dev */
@@ -1272,6 +1307,9 @@ static const struct dev_pm_ops mipi_csis_pm_ops = {
 static const struct of_device_id mipi_csis_of_match[] = {
 	{	.compatible = "fsl,imx7d-mipi-csi",
 		.data = (void *)&mipi_csis_phy_reset,
+	},
+	{	.compatible = "fsl,imx8mm-mipi-csi",
+		.data = (void *)&mipi_csis_phy_reset_mx8mm,
 	},
 	{ /* sentinel */ },
 };

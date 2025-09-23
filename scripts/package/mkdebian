@@ -229,6 +229,7 @@ if is_enabled CONFIG_MODULES; then
 cat <<EOF >> debian/control
 
 Package: linux-headers-$version
+Provides: linux-headers
 Architecture: $debarch
 Build-Profiles: <!pkg.${sourcename}.nokernelheaders>
 Description: Linux kernel headers for $version on $debarch
