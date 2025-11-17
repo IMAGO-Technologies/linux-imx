@@ -157,6 +157,7 @@ MODULE_PARM_DESC(debug, "Debug level (0-2)");
 #define MIPI_CSIS_ISPCFG_FMT_RAW8		(0x2a << 2)
 #define MIPI_CSIS_ISPCFG_FMT_RAW10		(0x2b << 2)
 #define MIPI_CSIS_ISPCFG_FMT_RAW12		(0x2c << 2)
+#define MIPI_CSIS_ISPCFG_FMT_RGB565		(0x22 << 2)
 /* User defined formats, x = 1...4 */
 #define MIPI_CSIS_ISPCFG_FMT_USER(x)	((0x30 + x - 1) << 2)
 #define MIPI_CSIS_ISPCFG_FMT_MASK		(0x3f << 2)
@@ -328,6 +329,10 @@ static const struct csis_pix_format mipi_csis_formats[] = {
 	}, {
 		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
 		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
+		.data_alignment = 16,
+	}, {
+		.code = MEDIA_BUS_FMT_RGB565_1X16,
+		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RGB565,
 		.data_alignment = 16,
 	}
 };
