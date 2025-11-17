@@ -463,24 +463,36 @@
 	pinctrl-0 = <&pinctrl_i2c4>;
 	status = "okay";
 
+	/* Board EEPROM */
 	at24@50 {
 		compatible = "at24,24c128";
 		pagesize = <64>;
 		reg = <0x50>;
+		vcc-supply = <&buck4_reg>;
 	};
 
 	lm75: lm75@49 {
 		compatible = "lm75";
 		reg = <0x49>;
+		vs-supply = <&buck4_reg>;
 	};
 
 	rtc_rv8263: rv8263@51 {
-		/* "microcrystal,rv8263" requires new kernel:
+		/* "microcrystal,rv8263" is not tested yet:
 		compatible = "microcrystal,rv8263"; */
 		compatible = "nxp,pcf85063";
 		reg = <0x51>;
-		status = "disabled"; /* enabled by U-Boot */
+		status = "disabled"; /* enabled by U-Boot if present */
 	};
+
+/*	The optional Strobe module EEPROM would have address conflict with rv8263@51
+	=> added in user-space depending on hardware
+	at24@51 {
+		compatible = "at24,24c128";
+		pagesize = <64>;
+		reg = <0x51>;
+		vcc-supply = <&buck4_reg>;
+	};*/
 };
 
 /* CONFIG_MXC_MIPI_CSI => drivers/media/platform/mxc/capture/mxc_mipi_csi.c */
