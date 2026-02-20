@@ -41,6 +41,11 @@
 /*
  * Save/restore interrupts.
  */
+	.macro save_and_disable_daif, flags
+	mrs	\flags, daif
+	msr	daifset, #0xf
+	.endm
+
 	.macro	save_and_disable_irq, flags
 	mrs	\flags, daif
 	msr	daifset, #3
@@ -850,9 +855,7 @@ alternative_cb_end
 #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
 	stp	x0, x1, [sp, #-16]!
 	stp	x2, x3, [sp, #-16]!
-alternative_cb ARM64_ALWAYS_SYSTEM, spectre_bhb_patch_wa3
-	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3 // Maybe patched to WA1
-alternative_cb_end
+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
 alternative_cb ARM64_ALWAYS_SYSTEM, smccc_patch_fw_mitigation_conduit
 	nop					// Patched to SMC/HVC #0
 alternative_cb_end

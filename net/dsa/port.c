@@ -1589,6 +1589,22 @@ dsa_port_phylink_mac_select_pcs(struct phylink_config *config,
 	return pcs;
 }
 
+/* dsa_supports_eee - indicate that EEE is supported
+ * @ds: pointer to &struct dsa_switch
+ * @port: port index
+ *
+ * A default implementation for the .support_eee() DSA operations member,
+ * which drivers can use to indicate that they support EEE on all of their
+ * user ports.
+ *
+ * Returns: true
+ */
+bool dsa_supports_eee(struct dsa_switch *ds, int port)
+{
+	return true;
+}
+EXPORT_SYMBOL_GPL(dsa_supports_eee);
+
 static void dsa_port_phylink_mac_config(struct phylink_config *config,
 					unsigned int mode,
 					const struct phylink_link_state *state)
@@ -1912,6 +1928,44 @@ void dsa_shared_port_link_unregister_of(struct dsa_port *dp)
 		dsa_port_phylink_destroy(dp);
 		return;
 	}
+}
+
+static void dsa_shared_port_suspend(struct dsa_port *dp)
+{
+	if (!dp->pl)
+		return;
+
+	rtnl_lock();
+	phylink_stop(dp->pl);
+	rtnl_unlock();
+}
+
+static void dsa_shared_port_resume(struct dsa_port *dp)
+{
+	if (!dp->pl)
+		return;
+
+	rtnl_lock();
+	phylink_start(dp->pl);
+	rtnl_unlock();
+}
+
+void dsa_port_suspend(struct dsa_port *dp)
+{
+	if (dsa_port_is_dsa(dp) || dsa_port_is_cpu(dp))
+		return dsa_shared_port_suspend(dp);
+
+	if (dp->user)
+		dsa_user_suspend(dp->user);
+}
+
+void dsa_port_resume(struct dsa_port *dp)
+{
+	if (dsa_port_is_dsa(dp) || dsa_port_is_cpu(dp))
+		return dsa_shared_port_resume(dp);
+
+	if (dp->user)
+		dsa_user_resume(dp->user);
 }
 
 int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr,
