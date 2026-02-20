@@ -1555,6 +1555,7 @@ int mxc_isi_video_register(struct mxc_isi_pipe *pipe,
 	q->min_queued_buffers = 2;
 	q->lock = &video->lock;
 	q->dev = pipe->isi->dev;
+	q->allow_cache_hints = 1;
 
 	ret = vb2_queue_init(q);
 	if (ret)

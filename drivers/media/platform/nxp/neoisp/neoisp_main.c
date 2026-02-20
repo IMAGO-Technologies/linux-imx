@@ -1875,6 +1875,7 @@ static int neoisp_init_node(struct neoisp_node_group_s *node_group, __u32 id)
 	q->dev = &neoispd->pdev->dev;
 	/* get V4L2 to handle node->queue locking */
 	q->lock = &node->queue_lock;
+	q->allow_cache_hints = 1;
 
 	ret = vb2_queue_init(q);
 	if (ret < 0) {
