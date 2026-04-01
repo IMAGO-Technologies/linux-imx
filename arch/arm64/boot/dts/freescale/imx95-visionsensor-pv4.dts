@@ -55,11 +55,15 @@
 			linux,cma-default;
 		};
 
-/* OF: reserved mem: Reserved memory: failed to reserve memory for node 'vpu_boot@a0000000': base 0x00000000a0000000, size 1 MiB
 		vpu_boot: vpu_boot@a0000000 {
 			reg = <0 0xa0000000 0 0x100000>;
 			no-map;
-		};*/
+		};
+
+		mali_protected: mali_protected {
+			reg = <0 0xa0100000 0 0x1000000>;
+			no-map;
+		};
 
 		vdev0vring0: vdev0vring0@88000000 {
 			reg = <0 0x88000000 0 0x8000>;
@@ -92,9 +96,10 @@
 			no-map;
 		};
 
-		vpu_boot: vpu_boot@88120000 {
-			reg = <0 0x88120000 0 0x100000>;
-			no-map;
+		neutron_mem: neutron_memory@100000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x1 0x00000000 0x1 0x00000000>;
 		};
 	};
 
@@ -142,6 +147,11 @@
 				clock-lanes = <0>;
 			};
 		};
+	};
+
+	mali_pma: protected-memory-allocator {
+		 compatible = "arm,protected-memory-allocator";
+		 memory-region = <&mali_protected>;
 	};
 };
 
@@ -526,4 +536,13 @@
 
 &neoisp0 {
 	status = "okay";
+};
+
+/* imx95-19x19-evk-neutron.dtso */
+&neutron {
+	memory-region = <&neutron_mem>;
+};
+
+&mali {
+	protected-memory-allocator = <&mali_pma>;
 };
